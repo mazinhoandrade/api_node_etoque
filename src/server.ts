@@ -1,9 +1,10 @@
-import express, { Request, Response }  from "express";
+import express, { Request, Response, ErrorRequestHandler }  from "express";
 import path from "path";
 import dotenv from "dotenv";
 import apiRoutes from "../src/routes/api";
 import cors from "cors";
 import { mongoConnect } from "./database/mongo";
+import { MulterError } from "multer";
 
 //instaciando do dotenv
 dotenv.config();
@@ -32,6 +33,17 @@ server.use((req: Request, res: Response)=>{
     res.status(404);
     res.json({error: 'Endpoint não encotrando'});
 });
+const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+    res.status(400); // bad Resquest
+
+    if ( err instanceof MulterError ) {
+        res.json({ error: err.code });
+    } else {
+        console.log( err );
+        res.json({ error: 'Ocorreu algum erro.' });
+    }
+};
+server.use(errorHandler);
 
 //rodando servidor
 server.listen(process.env.PORT);

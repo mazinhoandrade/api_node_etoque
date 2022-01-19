@@ -1,20 +1,22 @@
-import { model, connection, Schema } from 'mongoose';
+import { model, connection, Schema, set } from 'mongoose';
 
 type ProductType = {
-    nome: string,
-    descricao: string,
-    valor: number,
-    cod: number,
-    foto: string
+    name: string,
+    description: string,
+    price: number,
+    code: number,
+    photo: string | null 
 }   
 
 const schema = new Schema<ProductType>({
-    nome: { type: String, required:true },
-    descricao: String,
-    valor: { type: Number, required:true},
-    cod: Number,
-    foto: String
+    name: { type: String, required:true },
+    description: String,
+    price: { type: Number, required:true},
+    code: Number,
+    photo: { type: String, default: null }
 });
+
+
 
 const modelName: string = 'products';
 

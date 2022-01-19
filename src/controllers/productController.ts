@@ -1,22 +1,41 @@
+import { unlink } from "fs/promises";
 import { Request, Response } from "express";
+import { copyFileSync } from "fs";
+import sharp from "sharp";
 import Product from "../models/product";
 
 //adicionar produto no banco
 export const createProduct = async (req: Request, res: Response) => {
     
-    let { nome, descricao, cod, valor, foto } = req.body; 
+    let { name, description, code, price} = req.body; 
 
-    let list = await Product.find({cod:cod}).count();
+    if ( req.file ){
+        const filename = `${req.file.filename}.jpg`;
+
+        await sharp(req.file.path)
+            //.resize(500,500) definir o tamanho da imagem
+            .toFormat('jpeg')
+            .toFile(`./public/media/products/${filename}`);
+        await unlink(req.file.path);
+
+        //res.json({image: `${filename}`});
+    } else {
+        res.status(400);
+        res.json({error: 'Envie o Arquivo'});
+    }
+    
+    let list = await Product.find({code:code}).count();
     
     if (list === 0 ){
-        let newProduct = await Product.create({ nome, 
-            descricao, 
-            cod: parseInt(cod),
-            valor: parseInt(valor), 
-            foto 
+        let newProduct = await Product.create({ 
+            name, 
+            description, 
+            code: parseInt(code),
+            price: parseInt(price), 
+            photo : `${req.file?.filename}.jpg`
         });
         res.status(201);
-        res.json({ _id: newProduct._id, nome, descricao, cod, valor, foto});
+        res.json({ _id: newProduct._id, name, description, code, price });
         
     } else {
         res.json({error: 'produto ja cadastrado com esse codigo' })
