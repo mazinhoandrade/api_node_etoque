@@ -1,23 +1,19 @@
 import { model, connection, Schema } from 'mongoose';
 
-type ProductType = {
-    nome: string,
-    descricao: string,
-    valor: number,
-    cod: number,
-    foto: string
+type UserType = {
+    user: string,
+    email: string,
+    password: string
 }   
 
-const schema = new Schema<ProductType>({
-    nome: { type: String, required:true },
-    descricao: String,
-    valor: { type: Number, required:true},
-    cod: Number,
-    foto: String
+const schema = new Schema<UserType>({
+    user: { type: String, required:true },
+    email: { type: String, required:true },
+    password: { type: String, required:true }
 });
 
-const modelName: string = 'products';
+const modelName: string = 'users';
 
 export default (connection && connection.models[modelName]) ?
     connection.models[modelName] :
-    model<ProductType>(modelName, schema);
+    model<UserType>(modelName, schema);

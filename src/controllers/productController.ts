@@ -1,6 +1,5 @@
 import { unlink } from "fs/promises";
 import { Request, Response } from "express";
-import { copyFileSync } from "fs";
 import sharp from "sharp";
 import Product from "../models/product";
 
@@ -34,7 +33,7 @@ export const createProduct = async (req: Request, res: Response) => {
             price: parseInt(price), 
             photo : `${req.file?.filename}.jpg`
         });
-        res.status(201);
+        //res.status(201);
         res.json({ _id: newProduct._id, name, description, code, price });
         
     } else {
@@ -45,6 +44,7 @@ export const createProduct = async (req: Request, res: Response) => {
 
 //lista de todos os produtos
 export const readProducts = async (req: Request, res: Response) => {
+    
     let list = await Product.find();
     res.json({list})
 };   

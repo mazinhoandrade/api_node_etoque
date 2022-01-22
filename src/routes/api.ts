@@ -1,8 +1,12 @@
 import { randomInt } from "crypto";
 import { Router } from "express";
 import multer from "multer";
+import { Auth } from "../middlewares/auth";
 import * as productController from "../controllers/productController";
+import * as userController from "../controllers/userController";
 
+import { privateRoute } from "../config/passport";
+  
 const storageConfig = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, './tmp'); 
@@ -27,12 +31,17 @@ const upload = multer({
 
 const router = Router();
 
+// rotas de users
+router.post('/register', userController.register);
+router.post('/login', userController.login);
+router.get('/list', Auth.private, userController.listUsers);
+
 // rotas de produtos
-router.post('/products', upload.single('photo'), productController.createProduct);
-router.get('/products', productController.readProducts);
-router.get('/products/:id', productController.readOneProduct);
-router.put('/products/:id', productController.updateProduct);
-router.delete('/products/:id', productController.deleteProduct);
+router.post('/product', privateRoute, upload.single('photo'), productController.createProduct);
+router.get('/products', privateRoute, productController.readProducts);
+router.get('/product/:id', privateRoute, productController.readOneProduct);
+router.put('/product/:id', privateRoute, productController.updateProduct);
+router.delete('/product/:id', privateRoute, productController.deleteProduct);
 
 //rota pra testa a api
 router.get('/ping', productController.ping);

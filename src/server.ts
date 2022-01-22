@@ -5,6 +5,7 @@ import apiRoutes from "../src/routes/api";
 import cors from "cors";
 import { mongoConnect } from "./database/mongo";
 import { MulterError } from "multer";
+import passport from "passport";
 
 //instaciando do dotenv
 dotenv.config();
@@ -15,13 +16,12 @@ mongoConnect();
 const server = express();
 
 //liberado a api pra esse site se colocar o, '*' libera pra tudo
-server.use(cors({
-    origin: 'https://resttesttest.com' 
-}));
+server.use(cors());
 
 //deixando a pasta public acessiva 
 server.use(express.static(path.join(__dirname, '../public')));
 
+server.use(passport.initialize());
 //ativa o recebemento de dados via post
 server.use(express.urlencoded({extended:true}));
 
@@ -34,8 +34,20 @@ server.use((req: Request, res: Response)=>{
     res.json({error: 'Endpoint não encotrando'});
 });
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-    res.status(400); // bad Resquest
+    if (err.status) {
+        res.status(err.status);
+    } else {
+        res.status(400); // bad Resquest
+    }
 
+    if (err.message) {
+        res.json({error: err.message});
+        return;
+    } else {
+        res.json({ error: 'Ocorreu algum erro.' });
+    }
+    
+    
     if ( err instanceof MulterError ) {
         res.json({ error: err.code });
     } else {
