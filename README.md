@@ -9,4 +9,4 @@ api de gerenciamento de estoque em nodejs
 `npm ìnstall`
 
 ### Pra rodar o projeto
-`npm run st-dev`
+`npm run start-dev`

@@ -1,14 +1,11 @@
 import express, { Request, Response, ErrorRequestHandler }  from "express";
 import path from "path";
-import dotenv from "dotenv";
+import "dotenv/config";
 import apiRoutes from "../src/routes/api";
 import cors from "cors";
 import { mongoConnect } from "./database/mongo";
 import { MulterError } from "multer";
 import passport from "passport";
-
-//instaciando do dotenv
-dotenv.config();
 
 mongoConnect();
 
@@ -34,6 +31,7 @@ server.use((req: Request, res: Response)=>{
     res.json({error: 'Endpoint não encotrando'});
 });
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+    
     if (err.status) {
         res.status(err.status);
     } else {

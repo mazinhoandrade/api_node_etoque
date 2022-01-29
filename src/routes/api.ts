@@ -5,6 +5,7 @@ import { Auth } from "../middlewares/auth";
 import * as productController from "../controllers/productController";
 import * as userController from "../controllers/userController";
 
+
 import { privateRoute } from "../config/passport";
   
 const storageConfig = multer.diskStorage({

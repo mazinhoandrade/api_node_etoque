@@ -22,7 +22,7 @@ export const Auth = {
 
                     success = true;
                 } catch(err) {
-                    
+                    return;
                 }
 
             }

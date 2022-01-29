@@ -73,6 +73,7 @@ export const updateProduct = async (req: Request, res: Response) => {
                 product.cod = parseInt(cod);
             } else {
                 res.json({error: 'produto ja cadastrado com esse codigo' });
+                return;
             }   
         } 
 
