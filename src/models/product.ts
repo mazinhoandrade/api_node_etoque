@@ -2,17 +2,30 @@ import { model, connection, Schema, set } from 'mongoose';
 
 type ProductType = {
     name: string,
-    description: string,
+    description: string | null,
     price: number,
     code: number,
     photo: string | null 
 }   
 
 const schema = new Schema<ProductType>({
-    name: { type: String, required:true },
-    description: String,
-    price: { type: Number, required:true},
-    code: Number,
+    name: { 
+        type: String,
+        required:[true, '(name) Campo Obrigatorio'], 
+    },
+    description: {
+        type: String,
+        default: null 
+    },
+    price: {
+        type: Number,
+        required:[true, '(price) Campo Obrigatorio'],
+    },
+    code:{
+        type: Number,
+        required:[true, '(code) Campo Obrigatorio'],
+        unique:true,
+    },
     photo: { type: String, default: null }
 });
 

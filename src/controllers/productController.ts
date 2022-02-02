@@ -5,101 +5,104 @@ import Product from "../models/product";
 
 //adicionar produto no banco
 export const createProduct = async (req: Request, res: Response) => {
-    
-    let { name, description, code, price} = req.body; 
+  let { name, description, code, price } = req.body;
 
-    if ( req.file ){
-        const filename = `${req.file.filename}.jpg`;
+  try {
+    let hasCode = await Product.find({ code });
+    if (hasCode.length)
+      throw new Error("produto ja cadastrado com esse codigo");
 
-        await sharp(req.file.path)
-            //.resize(500,500) definir o tamanho da imagem
-            .toFormat('jpeg')
-            .toFile(`./public/media/products/${filename}`);
-        await unlink(req.file.path);
+    price = price.replace(".", "").replace(",", ".");
+    price = parseFloat(price);
+    let newProduct = await Product.create({
+      name,
+      description,
+      code: parseInt(code),
+      price,
+    });
 
-        //res.json({image: `${filename}`});
-    } else {
-        res.status(400);
-        res.json({error: 'Envie o Arquivo'});
-    }
-    
-    let list = await Product.find({code:code}).count();
-    
-    if (list === 0 ){
-        let newProduct = await Product.create({ 
-            name, 
-            description, 
-            code: parseInt(code),
-            price: parseInt(price), 
-            photo : `${req.file?.filename}.jpg`
-        });
-        //res.status(201);
-        res.json({ _id: newProduct._id, name, description, code, price });
-        
-    } else {
-        res.json({error: 'produto ja cadastrado com esse codigo' })
+    if (req.file) {
+      const filename = `${req.file.filename}.jpg`;
+      await sharp(req.file.path)
+        //.resize(500,500) definir o tamanho da imagem
+        .toFormat("jpeg")
+        .toFile(`./public/media/products/${filename}`);
+      //await unlink(req.file.path);
+      newProduct.photo = filename;
     }
 
+    newProduct.save();
+    return res.status(201).json({ newProduct });
+  } catch (err: any) {
+    return res.status(400).json({ message: err.message });
+  }
 };
 
 //lista de todos os produtos
 export const readProducts = async (req: Request, res: Response) => {
-    
-    let list = await Product.find();
-    res.json({list})
-};   
+  let products = await Product.find();
+  res.json({ products });
+};
 
 //produto selecionado pelo id
 export const readOneProduct = async (req: Request, res: Response) => {
-    let { id } = req.params;
+  let { id } = req.params;
+
+  try {
     let product = await Product.findById(id);
-    if (product) {
-        res.json({ product });
-    } else {
-        res.json({error: 'Produto não encontrado' })
-    }
-    
-};  
+    if (!product) throw new Error("Nenhun produto encotrado");
+    res.json({ product });
+  } catch (err: any) {
+    return res.json({ message: err.message });
+  }
+};
 
 //atualizando produto no banco com o id
 export const updateProduct = async (req: Request, res: Response) => {
-    let { id } = req.params;
-    let { nome, descricao, cod, valor, foto } = req.body; 
+  let { id } = req.params;
+  let { name, description, code, price } = req.body;
+
+  try {
     let product = await Product.findById(id);
-    if ( product ) {
-        if ( product.cod !== parseInt(cod) ){
-            let verificaCod = await Product.find({cod:cod}).count();
-            if (verificaCod === 0 ) {
-                product.cod = parseInt(cod);
-            } else {
-                res.json({error: 'produto ja cadastrado com esse codigo' });
-                return;
-            }   
-        } 
 
-        product.nome = nome;
-        product.descricao = descricao;
-        product.valor = valor;
-        product.foto = foto;
-        await product.save();
+    if (product.code !== parseInt(code)) {
+      let hasCode = await Product.find({ code });
+      if (hasCode.length) throw new Error("produto ja cadastrado com esse codigo");
+      product.code = parseInt(code);
+    } 
 
-        res.status(201);
-        res.json({ product });
-     
-    } else {
-        res.json({error: 'Produto não encontrado' });
-    }    
+    price = price.replace(".", "").replace(",", ".");
+    price = parseFloat(price);
+
+    product.name = name;
+    product.description = description;
+    product.price = price;
+
+    if (req.file) {
+      const filename = `${req.file.filename}.jpg`;
+      await sharp(req.file.path)
+        //.resize(500,500) definir o tamanho da imagem
+        .toFormat("jpeg")
+        .toFile(`./public/media/products/${filename}`);
+      //await unlink(req.file.path);
+      product.photo = filename;
+    }
+
+    await product.save();
+    return res.status(201).json({ product });
+  } catch (err: any) {
+    return res.status(400).json({ message: err.message });
+  }
   
-}; 
+};
 
 //deleta produto
 export const deleteProduct = async (req: Request, res: Response) => {
-    let { id } = req.params;
-    await Product.findById(id).remove();
-    res.json({});
-}; 
-
+  let { id } = req.params;
+  await Product.findById(id).remove();
+  res.json({});
+};
 
 export const ping = (req: Request, res: Response) => {
-    res.json({pong:true});
-}
+  res.json({ pong: true });
+};

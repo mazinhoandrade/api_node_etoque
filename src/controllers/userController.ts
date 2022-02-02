@@ -11,7 +11,6 @@ export const register = async (req: Request, res: Response) => {
         if (hasUser.length) throw new Error("Usuario ja existe")
 
         let key = password ? await hash(password, 10) : ''
-        console.log('ACONTECE ALGO', key)
         let newUser = await User.create({
             user,
             email,
@@ -25,10 +24,8 @@ export const register = async (req: Request, res: Response) => {
         );
 
         newUser.save();
-
-        res.status(201);
-        res.json({ token });
-        return;
+  
+        return res.status(201).json({ token });
     }
     catch (err: any) {
         return res.status(400).json({ message: err.message });
