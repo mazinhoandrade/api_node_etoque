@@ -3,9 +3,10 @@ import { Request, Response } from "express";
 import sharp from "sharp";
 import Product from "../models/product";
 
+
 //adicionar produto no banco
 export const createProduct = async (req: Request, res: Response) => {
-  let { name, description, code, price } = req.body;
+  let { name, units, description, code, price } = req.body;
 
   try {
     let hasCode = await Product.find({ code });
@@ -13,9 +14,10 @@ export const createProduct = async (req: Request, res: Response) => {
       throw new Error("produto ja cadastrado com esse codigo");
 
     price = price.replace(".", "").replace(",", ".");
-    price = parseFloat(price);
+    price = parseFloat(price.toFixed(2));
     let newProduct = await Product.create({
       name,
+      units: parseInt(units),
       description,
       code: parseInt(code),
       price,
@@ -60,8 +62,8 @@ export const readOneProduct = async (req: Request, res: Response) => {
 //atualizando produto no banco com o id
 export const updateProduct = async (req: Request, res: Response) => {
   let { id } = req.params;
-  let { name, description, code, price } = req.body;
-
+  let { name, units, description, code, price } = req.body;
+  
   try {
     let product = await Product.findById(id);
 
@@ -70,11 +72,14 @@ export const updateProduct = async (req: Request, res: Response) => {
       if (hasCode.length) throw new Error("produto ja cadastrado com esse codigo");
       product.code = parseInt(code);
     } 
-
+    
+    
     price = price.replace(".", "").replace(",", ".");
     price = parseFloat(price);
+  
 
     product.name = name;
+    product.units = parseInt(units),
     product.description = description;
     product.price = price;
 

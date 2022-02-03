@@ -5,13 +5,18 @@ type ProductType = {
     description: string | null,
     price: number,
     code: number,
-    photo: string | null 
+    photo: string | null,
+    units: number 
 }   
 
 const schema = new Schema<ProductType>({
     name: { 
         type: String,
         required:[true, '(name) Campo Obrigatorio'], 
+    },
+    units: { 
+        type: Number,
+        required:[true, '(units) Campo Obrigatorio'], 
     },
     description: {
         type: String,

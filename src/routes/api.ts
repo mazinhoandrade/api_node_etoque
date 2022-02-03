@@ -4,6 +4,7 @@ import multer from "multer";
 import { Auth } from "../middlewares/auth";
 import * as productController from "../controllers/productController";
 import * as userController from "../controllers/userController";
+import * as saleController from "../controllers/saleController";
 
 import { privateRoute } from "../config/passport";
 
@@ -44,6 +45,14 @@ router.get("/products", privateRoute, productController.readProducts);
 router.get("/product/:id", privateRoute, productController.readOneProduct);
 router.put("/product/:id", privateRoute, upload.single("photo"), productController.updateProduct);
 router.delete("/product/:id", privateRoute, productController.deleteProduct);
+
+// rotas de Vendas
+//router.get("/sale", privateRoute, saleController.makeSale);
+router.post("/sale", privateRoute, saleController.createSale);
+router.get("/sales", privateRoute, saleController.readSales);
+router.get("/sale/:id", privateRoute, saleController.readOneSale);
+router.put("/sale/:id", privateRoute, saleController.updateSale);
+router.delete("/sale/:id", privateRoute, saleController.deleteSale);
 
 //rota pra testa a api
 router.get("/ping", productController.ping);
