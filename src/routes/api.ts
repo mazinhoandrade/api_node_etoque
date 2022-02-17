@@ -1,4 +1,5 @@
 import { randomInt } from "crypto";
+import {celebrate, Joi} from "celebrate"
 import { Router } from "express";
 import multer from "multer";
 import { Auth } from "../middlewares/auth";
@@ -7,6 +8,7 @@ import * as userController from "../controllers/userController";
 import * as saleController from "../controllers/saleController";
 
 import { privateRoute } from "../config/passport";
+import { join } from "path";
 
 const storageConfig = multer.diskStorage({
   /* destination: (req, file, cb) => {
@@ -40,7 +42,7 @@ router.post("/login", userController.login);
 router.get("/list", Auth.private, userController.listUsers);
 
 // rotas de produtos
-router.post("/product", privateRoute, upload.single("photo"), productController.createProduct);
+router.post("/product", privateRoute,  upload.single("photo"), productController.createProduct);
 router.get("/products", privateRoute, productController.readProducts);
 router.get("/product/:id", privateRoute, productController.readOneProduct);
 router.put("/product/:id", privateRoute, upload.single("photo"), productController.updateProduct);

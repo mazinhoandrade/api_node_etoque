@@ -1,7 +1,11 @@
-import { unlink } from "fs/promises";
+
 import { Request, Response } from "express";
 import sharp from "sharp";
 import Product from "../models/product";
+
+import fs from 'fs';
+import path from 'path';
+import { promisify } from 'util';
 
 
 //adicionar produto no banco
@@ -9,12 +13,14 @@ export const createProduct = async (req: Request, res: Response) => {
   let { name, units, description, code, price } = req.body;
 
   try {
+    if (!(name && units && code && price) ) throw new Error("Campos Obrigatorios exeto Descrição");
+
     let hasCode = await Product.find({ code });
     if (hasCode.length)
       throw new Error("produto ja cadastrado com esse codigo");
 
     price = price.replace(".", "").replace(",", ".");
-    price = parseFloat(price.toFixed(2));
+    price = parseFloat(price);
     let newProduct = await Product.create({
       name,
       units: parseInt(units),
@@ -62,38 +68,46 @@ export const readOneProduct = async (req: Request, res: Response) => {
 //atualizando produto no banco com o id
 export const updateProduct = async (req: Request, res: Response) => {
   let { id } = req.params;
-  let { name, units, description, code, price } = req.body;
+  let {name, units, description, code, price } = req.body;
   
   try {
     let product = await Product.findById(id);
-
-    if (product.code !== parseInt(code)) {
-      let hasCode = await Product.find({ code });
-      if (hasCode.length) throw new Error("produto ja cadastrado com esse codigo");
-      product.code = parseInt(code);
-    } 
-    
-    
-    price = price.replace(".", "").replace(",", ".");
-    price = parseFloat(price);
-  
-
-    product.name = name;
-    product.units = parseInt(units),
-    product.description = description;
-    product.price = price;
-
-    if (req.file) {
-      const filename = `${req.file.filename}.jpg`;
-      await sharp(req.file.path)
-        //.resize(500,500) definir o tamanho da imagem
-        .toFormat("jpeg")
-        .toFile(`./public/media/products/${filename}`);
-      //await unlink(req.file.path);
-      product.photo = filename;
+    if (code) {
+      if (product.code !== parseInt(code)) {
+        let hasCode = await Product.find({ code });
+          if (hasCode.length) throw new Error("produto ja cadastrado com esse codigo");
+          product.code = parseInt(code);
+      } 
     }
 
+    if (name) {
+      product.name = name;
+    } 
+    if (units) {
+      product.units = parseInt(units);
+    }
+    if(price) {
+      price = price.replace(".", "").replace(",", ".");
+      price = parseFloat(price);
+      product.price = price;
+    }
     await product.save();
+    product.description = description;
+
+    if (req.file) {           
+      const filename = `${req.file.filename}.jpg`;
+      await sharp(req.file.path)
+          //.resize(500,500) definir o tamanho da imagem
+        .toFormat("jpeg")
+        .toFile(`./public/media/products/${filename}`);
+        if (product.photo !== null) {
+          promisify(fs.unlink)
+          (path.resolve(__dirname, '..' , '..', 'public', 'media', 'products', product.photo));
+        }
+      product.photo = filename;    
+    }
+    
+    await product.save(); 
     return res.status(201).json({ product });
   } catch (err: any) {
     return res.status(400).json({ message: err.message });
@@ -104,7 +118,13 @@ export const updateProduct = async (req: Request, res: Response) => {
 //deleta produto
 export const deleteProduct = async (req: Request, res: Response) => {
   let { id } = req.params;
-  await Product.findById(id).remove();
+  let product = await Product.findById(id)
+
+  if (product.photo !== null) {
+    promisify(fs.unlink)
+    (path.resolve(__dirname, '..' , '..', 'public', 'media', 'products', product.photo));
+  }
+  product.remove();
   res.json({});
 };
 

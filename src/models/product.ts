@@ -1,6 +1,10 @@
-import { model, connection, Schema, set } from 'mongoose';
+import { model, connection, Schema} from 'mongoose';
 
-type ProductType = {
+import fs from 'fs';
+import path from 'path';
+import { promisify } from 'util';
+
+export interface ProductType extends Document {
     name: string,
     description: string | null,
     price: number,
@@ -12,11 +16,11 @@ type ProductType = {
 const schema = new Schema<ProductType>({
     name: { 
         type: String,
-        required:[true, '(name) Campo Obrigatorio'], 
+        required:[true, '(name) Campo Obrigatorio'],   
     },
     units: { 
         type: Number,
-        required:[true, '(units) Campo Obrigatorio'], 
+        //required:[true, '(units) Campo Obrigatorio'], 
     },
     description: {
         type: String,
@@ -24,15 +28,25 @@ const schema = new Schema<ProductType>({
     },
     price: {
         type: Number,
-        required:[true, '(price) Campo Obrigatorio'],
+        //required:[true, '(price) Campo Obrigatorio'],
     },
     code:{
         type: Number,
-        required:[true, '(code) Campo Obrigatorio'],
+        //required:[true, '(code) Campo Obrigatorio'],
         unique:true,
     },
-    photo: { type: String, default: null }
+    photo: {
+        type: String, 
+        default: null,
+    }
 });
+
+/* schema.pre<ProductType>('deleteOne', async  function() {
+    return promisify
+    (fs.unlink)
+    (path.resolve(__dirname, '..' , '..', '/public/media/products', this.photo ));
+});  */
+
 
 
 
