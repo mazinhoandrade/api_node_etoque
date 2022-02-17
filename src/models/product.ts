@@ -1,8 +1,5 @@
 import { model, connection, Schema} from 'mongoose';
 
-import fs from 'fs';
-import path from 'path';
-import { promisify } from 'util';
 
 export interface ProductType extends Document {
     name: string,
@@ -20,7 +17,7 @@ const schema = new Schema<ProductType>({
     },
     units: { 
         type: Number,
-        //required:[true, '(units) Campo Obrigatorio'], 
+        required:[true, '(units) Campo Obrigatorio'], 
     },
     description: {
         type: String,
@@ -28,11 +25,11 @@ const schema = new Schema<ProductType>({
     },
     price: {
         type: Number,
-        //required:[true, '(price) Campo Obrigatorio'],
+        required:[true, '(price) Campo Obrigatorio'],
     },
     code:{
         type: Number,
-        //required:[true, '(code) Campo Obrigatorio'],
+        required:[true, '(code) Campo Obrigatorio'],
         unique:true,
     },
     photo: {

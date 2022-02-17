@@ -1,5 +1,4 @@
 import { randomInt } from "crypto";
-import {celebrate, Joi} from "celebrate"
 import { Router } from "express";
 import multer from "multer";
 import { Auth } from "../middlewares/auth";
