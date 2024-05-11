@@ -38,24 +38,24 @@ const router = Router();
 // rotas de users
 router.post("/register", userController.register);
 router.post("/login", userController.login);
-router.get("/list", Auth.private, userController.listUsers);
+router.get("/list",/* Auth.private, */ userController.listUsers);
 
 // rotas de produtos
-router.post("/product", privateRoute,  upload.single("photo"), productController.createProduct);
-router.get("/products", privateRoute, productController.readProducts);
-router.get("/product/:id", privateRoute, productController.readOneProduct);
-router.put("/product/:id", privateRoute, upload.single("photo"), productController.updateProduct);
-router.delete("/product/:id", privateRoute, productController.deleteProduct);
+router.post("/product", Auth.private,   upload.single("photo"), productController.createProduct);
+router.get("/products", Auth.private,  productController.readProducts);
+router.get("/product/:id", Auth.private,  productController.readOneProduct);
+router.put("/product/:id", Auth.private,  upload.single("photo"), productController.updateProduct);
+router.delete("/product/:id", Auth.private, productController.deleteProduct);
 
 // rotas de Vendas
 //router.get("/sale", privateRoute, saleController.makeSale);
-router.post("/sale", privateRoute, saleController.createSale);
-router.get("/sales", privateRoute, saleController.readSales);
+router.post("/sale", Auth.private, saleController.createSale);
+router.get("/sales", saleController.readSales);
 router.get("/sale/:id", privateRoute, saleController.readOneSale);
 router.put("/sale/:id", privateRoute, saleController.updateSale);
-router.delete("/sale/:id", privateRoute, saleController.deleteSale);
+router.delete("/sale/:id", saleController.deleteSale);
 
 //rota pra testa a api
-router.get("/ping", productController.ping);
+router.get("/ping", Auth.private , productController.ping);
 
 export default router;

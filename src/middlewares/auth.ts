@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import JWT from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { Console } from 'console';
 //import { User } from '../models/user';
 
 dotenv.config();
@@ -13,7 +14,7 @@ export const Auth = {
         if(req.headers.authorization) {
             
             const [authType, token] = req.headers.authorization.split(' ');
-            if(authType === 'Bearer') {
+            if(authType == 'token') {
                 try {
                     JWT.verify(
                         token,

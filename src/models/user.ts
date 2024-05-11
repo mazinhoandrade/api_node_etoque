@@ -21,7 +21,7 @@ const schema = new Schema<UserType>({
     password: {
         type: String,
         required:[true, 'Campo Obrigatorio'],
-        minlength: [4, 'Campo tem que ter no minimo 4 caracteres'],
+        minlength: [3, 'Campo tem que ter no minimo 4 caracteres'],
     }
 });
 

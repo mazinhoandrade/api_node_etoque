@@ -8,7 +8,7 @@ type SaleType = {
     },
     saleValue: number,
     qtd: Number,
-    dateSale: Date,
+    dateSale?: Date | string,
 }   
 
 const schema = new Schema<SaleType>({
@@ -26,7 +26,7 @@ const schema = new Schema<SaleType>({
         required:[true, '(qtd) Campo Obrigatorio']
     },
     dateSale: {
-        type: Date,
+        type: Date ,
         default: new Date()
     }
 
